@@ -6,13 +6,14 @@ import (
     "ratoneando/config"
     "ratoneando/middlewares"
     "ratoneando/routes"
+    "ratoneando/utils/cache"
     "ratoneando/utils/logger"
 )
 
 func main() {
     logger.Init()
     config.Init()
-    // cache.Init() // Comentado porque cache.go está vacío y no usamos Redis
+    cache.Init() // Descomentado para inicializar Redis
 
     // Ajustar el modo de Gin según el entorno
     ginMode := os.Getenv("GIN_MODE")

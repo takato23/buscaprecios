@@ -1,45 +1,63 @@
 package cache
 
 import (
-	"context"
-	"ratoneando/config"
-	"ratoneando/utils/logger"
-	"time"
-
-	"github.com/redis/go-redis/v9"
+    "context"
+    "github.com/go-redis/redis/v9"
+    "ratoneando/config"
+    "ratoneando/utils/logger"
 )
 
-var (
-	Client *redis.Client
-)
+var Client *redis.Client
+var ctx = context.Background()
 
 func Init() {
-	logger.Log(config.REDIS_URL)
-	opts, err := redis.ParseURL(config.REDIS_URL)
-	if err != nil {
-		logger.LogFatal("Error parsing Redis URL")
-	}
+    redisURL := config.REDIS_URL
+    if redisURL == "" {
+        logger.LogFatal("REDIS_URL is not set, cannot initialize Redis")
+    }
 
-	client := redis.NewClient(opts)
+    opts, err := redis.ParseURL(redisURL)
+    if err != nil {
+        logger.LogFatal("Failed to parse REDIS_URL: " + err.Error())
+    }
 
-	Client = client
-}
+    Client = redis.NewClient(opts)
 
-func Set(key string, value string, expiration int) error {
-	ctx := context.Background()
-	err := Client.Set(ctx, key, value, time.Duration(expiration)*time.Second).Err()
-	if err != nil {
-		logger.LogWarn("Error setting key: " + key)
-		return err
-	}
-	return nil
+    // Verificar la conexión
+    _, err = Client.Ping(ctx).Result()
+    if err != nil {
+        logger.LogFatal("Failed to connect to Redis: " + err.Error())
+    }
+
+    logger.Log("Successfully connected to Redis")
 }
 
 func Get(key string) (string, error) {
-	ctx := context.Background()
-	value, err := Client.Get(ctx, key).Result()
-	if err != nil {
-		return "", err
-	}
-	return value, nil
+    if Client == nil {
+        logger.LogWarn("Redis client not initialized, skipping cache Get")
+        return "", nil
+    }
+
+    value, err := Client.Get(ctx, key).Result()
+    if err == redis.Nil {
+        return "", nil
+    }
+    if err != nil {
+        logger.LogWarn("Error getting key from Redis: " + err.Error())
+        return "", err
+    }
+    return value, nil
+}
+
+func Set(key, value string) error {
+    if Client == nil {
+        logger.LogWarn("Redis client not initialized, skipping cache Set")
+        return nil
+    }
+
+    err := Client.Set(ctx, key, value, 0).Err()
+    if err != nil {
+        logger.LogWarn("Error setting key in Redis: " + err.Error())
+    }
+    return err
 }
