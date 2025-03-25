@@ -4,6 +4,7 @@ import (
     "os"
     "github.com/gin-contrib/cors"
     "github.com/gin-gonic/gin"
+    "time"
 )
 
 func CORS(router *gin.Engine) {
@@ -11,15 +12,15 @@ func CORS(router *gin.Engine) {
         AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
         AllowHeaders:     []string{"Origin", "Content-Type", "Accept"},
         AllowCredentials: true,
+        MaxAge:           12 * time.Hour, // Cache de CORS
     }
 
-    // Si estamos en producción, permitir el dominio de la app y Lovable
+    // En producción, permitir WEB_URL y Lovable
     if os.Getenv("GIN_MODE") == "release" {
         webURL := os.Getenv("WEB_URL")
+        corsConfig.AllowOrigins = []string{"https://lovable.app", "https://preview.lovable.app"}
         if webURL != "" {
-            corsConfig.AllowOrigins = []string{webURL, "https://lovable.app", "https://preview.lovable.app"}
-        } else {
-            corsConfig.AllowOrigins = []string{"https://lovable.app", "https://preview.lovable.app"}
+            corsConfig.AllowOrigins = append(corsConfig.AllowOrigins, webURL)
         }
     } else {
         // En desarrollo, permitir todo
