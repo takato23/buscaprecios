@@ -35,9 +35,8 @@ func Init() {
     PORT = getEnv("PORT", "3000")
     ENV = getEnv("ENV", "development")
     WEB_URL = getEnv("WEB_URL", "http://localhost:5173")
-    REDIS_URL = getEnv("REDIS_URL", "") // Usar "" como valor por defecto
+    REDIS_URL = getEnv("REDIS_URL", "")
     REDIS_CACHE_EXPIRATION, _ = strconv.Atoi(getEnv("REDIS_CACHE_EXPIRATION", "28800"))
     RESPONSE_CACHE_EXPIRATION = getEnv("RESPONSE_CACHE_EXPIRATION", "3600")
     CORE_CACHE_EXPIRATION, _ = strconv.Atoi(getEnv("CORE_CACHE_EXPIRATION", "0"))
-}
 }
