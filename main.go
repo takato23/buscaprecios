@@ -6,7 +6,6 @@ import (
     "ratoneando/config"
     "ratoneando/middlewares"
     "ratoneando/routes"
-    "ratoneando/utils/cache"
     "ratoneando/utils/logger"
 )
 
