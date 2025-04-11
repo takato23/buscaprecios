@@ -7,7 +7,7 @@ import (
 
 func CORS(router *gin.Engine) {
     corsConfig := cors.Config{
-        AllowOrigins:     []string{"*"}, // Permitir todos los orígenes (para testing)
+        AllowOrigins:     []string{"http://localhost:5173", "http://localhost:5174", "http://localhost:5175", "http://localhost:5176", "http://localhost:5177"}, 
         AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
         AllowHeaders:     []string{"Origin", "Content-Type", "Accept"},
         AllowCredentials: true,
