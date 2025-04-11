@@ -39,15 +39,6 @@ func NormalizedScraper(c *gin.Context) {
 		return
 	}
 
-	// Quick check to see if the query is valid
-	if strings.ToLower(query) != query {
-		fmt.Println("Uppercase query", query, c.Request.Header, clientIp)
-		c.JSON(http.StatusForbidden, gin.H{
-			"error": "Forbidden",
-		})
-		return
-	}
-
 	// Cache
 	cacheResponse, _ := cache.Get(query)
 	if cacheResponse != "" {
