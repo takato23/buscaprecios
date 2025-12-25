@@ -98,3 +98,4 @@ func Carrefour(query string) ([]products.Schema, error) {
 		},
 	})
 }
+
